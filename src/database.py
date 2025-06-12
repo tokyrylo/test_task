@@ -7,31 +7,37 @@ from sqlalchemy import (
     String,
     Table,
 )
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import registry
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
-from sqlalchemy.dialects.postgresql import UUID, JSONB, ENUM
+# from sqlalchemy.dialects.postgresql import ENUM
+
+from src.config import get_settings
+from src.constants import DB_NAMING_CONVENTION
+
+settings = get_settings()
+
+DATABASE_ASYNC_URL = str(settings.DATABASE_URL)
 
 mapper_registry = registry()
-engine_sync = create_engine(DATABASE_URL)
+engine = create_async_engine(DATABASE_ASYNC_URL)
 metadata = MetaData(naming_convention=DB_NAMING_CONVENTION)
 
-sync_session = sessionmaker(engine_sync, class_=Session, expire_on_commit=False)
+async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 Base = declarative_base()
 
 
 async def get_db():
-    async with sync_session() as session:
+    async with async_session() as session:
         try:
             yield session
         finally:
             await session.close()
 
-
+# Таблицы
 rooms = Table(
     "rooms",
     metadata,
