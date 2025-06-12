@@ -11,6 +11,7 @@ alembic = "*"
 watchfiles = "*"
 uvicorn = "*"
 pre-commit = "*"
+asyncpg = "*"
 
 [dev-packages]
 
