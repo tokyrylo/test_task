@@ -12,6 +12,7 @@ watchfiles = "*"
 uvicorn = "*"
 pre-commit = "*"
 asyncpg = "*"
+psycopg2 = "*"
 
 [dev-packages]
 

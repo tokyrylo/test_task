@@ -2,8 +2,9 @@ from functools import lru_cache
 
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
-    DATABASE_URL: str 
+    DATABASE_URL: str
 
     class Config:
         env_file = ".env"
