@@ -1,7 +1,36 @@
-from sqlalchemy import (Column, DateTime, ForeignKey, Integer, MetaData,
-                        String, Table)
+from sqlalchemy import (
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    MetaData,
+    String,
+    Table,
+)
 
-metadata = MetaData()
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+from sqlalchemy.orm import registry
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.dialects.postgresql import UUID, JSONB, ENUM
+
+mapper_registry = registry()
+engine_sync = create_engine(DATABASE_URL)
+metadata = MetaData(naming_convention=DB_NAMING_CONVENTION)
+
+sync_session = sessionmaker(engine_sync, class_=Session, expire_on_commit=False)
+
+Base = declarative_base()
+
+
+async def get_db():
+    async with sync_session() as session:
+        try:
+            yield session
+        finally:
+            await session.close()
+
 
 rooms = Table(
     "rooms",
