@@ -8,35 +8,39 @@ from sqlalchemy import (
     Table,
 )
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
-from sqlalchemy.orm import registry
+from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker, declarative_base
-# from sqlalchemy.dialects.postgresql import ENUM
 
 from src.config import get_settings
-from src.constants import DB_NAMING_CONVENTION
 
 settings = get_settings()
 
 DATABASE_ASYNC_URL = str(settings.DATABASE_URL)
 
-mapper_registry = registry()
-engine = create_async_engine(DATABASE_ASYNC_URL)
-metadata = MetaData(naming_convention=DB_NAMING_CONVENTION)
+print(settings.DATABASE_URL)
 
-async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+async_engine = create_async_engine(DATABASE_ASYNC_URL)
+async_session = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
 
-Base = declarative_base()
+DATABASE_SYNC_URL = DATABASE_ASYNC_URL.replace("postgresql+asyncpg", "postgresql")
+sync_engine = create_engine(DATABASE_SYNC_URL)
+sync_session = sessionmaker(sync_engine, class_=Session, expire_on_commit=False)
 
 
-async def get_db():
+async def get_async_session():
     async with async_session() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
+        yield session
 
+
+def get_db_sync():
+    session = sync_session()
+    try:
+        yield session
+    finally:
+        session.close()
+
+
+metadata = MetaData()
 # Таблицы
 rooms = Table(
     "rooms",
