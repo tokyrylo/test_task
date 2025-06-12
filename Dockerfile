@@ -12,6 +12,7 @@ WORKDIR /app
 RUN pip install --upgrade pip && pip install setuptools wheel
 
 COPY requirements.txt .
+COPY seed.py /app/seed.py
 
 RUN pip install --no-cache-dir -r requirements.txt
 
