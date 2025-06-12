@@ -7,12 +7,10 @@ name = "pypi"
 fastapi = "*"
 pydantic = "*"
 pydantic-settings = "*"
-alembic = "*"
+sqlalchemy = "*"
 watchfiles = "*"
 uvicorn = "*"
-pre-commit = "*"
-asyncpg = "*"
-psycopg2 = "*"
+alembic = "*"
 
 [dev-packages]
 
